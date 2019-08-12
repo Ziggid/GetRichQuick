@@ -1,14 +1,11 @@
-class Stock
+class Stock:
 
-    def _init_(self, stockId,  date):
+    def __init__(self, stockId,  date):
         self.stockId = stockId
         self.date = date
 
-
-
     def getStockPrice(self, stockId, date):
-        return
+         return "hoi"
 
-
-    def _str_(self, stockId,  date):
-        return 'The stock' + self.stockId + 'trades for ' + getStockPrice(stockId,  date) + 'on' + self.date
+    def __str__(self):
+        return 'The stock ' + str(self.stockId) + ' trades for ...' + ' on ' + str(self.date)

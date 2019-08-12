@@ -6,6 +6,5 @@ class Transaction:
         self.stockId = stockId
         self.orderType = orderType
 
-    def __str__(self, transactionDate, transactionVolume, transactionPrice, stockId, orderType):
-        return 'A' + self.orderType + "of" + self.stockId + "of size" + self.transactionVolume + 'is executed on' + self.transactionDate + 'for the price of' + self.transactionPrice
-
+    def __str__(self):
+        return 'A ' + str(self.orderType) + " of " + str(self.stockId) + " of size " + str(self.transactionVolume) + ' is executed on ' + str(self.transactionDate) + ' for the price of ' + str(self.transactionPrice)
