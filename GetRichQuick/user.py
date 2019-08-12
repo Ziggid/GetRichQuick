@@ -1,5 +1,3 @@
-from TransactionClass import Transaction
-
 class User:
     name = ""
     balance = 0
@@ -12,16 +10,16 @@ class User:
 
 
     def doTransaction(self, transaction):
-        self.transactions.add(transaction)
+        self.transactions.append(transaction)
         if transaction.orderType == 'buy':
             self.balance -= transaction.transactionPrice * transaction.transactionVolume
-            if transaction.stockId not in portfolio.keys():
-                portfolio[transaction.stockId] = 0
-            portfolio[transaction.stockId] += transaction.transactionVolume
+            if transaction.stockId not in self.portfolio.keys():
+                self.portfolio[transaction.stockId] = 0
+            self.portfolio[transaction.stockId] += transaction.transactionVolume
         elif transaction.orderType == 'sell':
-            if transaction.stockId not in portfolio.keys():
+            if transaction.stockId not in self.portfolio.keys():
                 print(transaction.stockId + " not in portfolio!")
-            portfolio[transaction.stockId] += transaction.transactionVolume
+            self.portfolio[transaction.stockId] -= transaction.transactionVolume
             self.balance += transaction.transactionPrice * transaction.transactionVolume
         else:
             print("unknown order type: ", transaction.orderType)
@@ -34,11 +32,4 @@ class User:
 
     # Todo
     def getPortfolio(self):
-        pass
-
-
-u = User("bart", 100)
-t = Transaction(1, 100, 20, "google", "buy")
-
-
-print(u.balance)
+        return self.portfolio
