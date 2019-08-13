@@ -6,7 +6,7 @@ db = SqliteDatabase('getrich.db')
 
 class Portfolio(Model):
     # positions = list() needs to be backreffed
-    user = ForeignKeyField(User, backref='portfolios')
+    user = ForeignKeyField(User, backref='portfolio')
 
     # def add(self, position):
     #     self.positions.append(position)
@@ -15,9 +15,12 @@ class Portfolio(Model):
         for position in self.positions:
             if position.stock.stockId == stockId:
                 position.updatePosition(transactionVolume)
+                position.save()
                 return
         s = Stock(stockId=stockId)
+        s.save()
         p = Position(volume=transactionVolume, portfolio = self, stock = s)
+        p.save()
         # self.positions.append(Position(Stock(stockId), transactionVolume))
 
     def GetPortfolioValue(self):
