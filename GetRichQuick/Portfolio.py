@@ -11,7 +11,10 @@ class Portfolio:
                 position.updatePosition(transactionVolume)
                 return
 
-        self.positions.append(Position(Stock(stockId), transactionVolume))
+        if transactionVolume >= 0:
+            self.positions.append(Position(Stock(stockId), transactionVolume))
+        else:
+            print('Negative position not allowed. Transaction of ' + str(transactionVolume) + ' ' + str(stockId) + ' stocks was denied.')
 
     def GetPortfolioValue(self):
         value = 0
