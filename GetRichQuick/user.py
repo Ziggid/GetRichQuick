@@ -58,7 +58,10 @@ class User(Model):
                 else:
                     print("You cannot buy a negative amount")
             else:
-                print("You don't have enough balance to carry out this transaction")
+                print("You don't have enough balance to carry out this transaction. Transaction of " + str(
+                    transactionVolume) + ' ' + str(
+                    stock.stockId) + ' stocks was denied. You needed ' + str(
+                    transactionPrice* transactionVolume) + ' euro, but only have a balance of ' + str(self.balance))
         elif orderType == 'sell':
             t = Transaction(user=self, stock=stock, transactionDate=transactionDate,
                             transactionPrice=transactionPrice, transactionVolume=transactionVolume,
@@ -67,9 +70,8 @@ class User(Model):
             self.portfolio[0].addPosition(stock.stockId, -transactionVolume)
             self.balance += float(transactionPrice) * float(transactionVolume)
         else:
-            print("unknown order type: ", transaction.orderType)
-
-            self.save()
+            print("unknown order type: ", orderType)
+        self.save()
 
     def getPortfolioValue(self):
         return self.portfolio.GetPortfolioValue()
