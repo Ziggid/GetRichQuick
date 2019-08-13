@@ -61,7 +61,8 @@ class User(Model):
                 print("You don't have enough balance to carry out this transaction. Transaction of " + str(
                     transactionVolume) + ' ' + str(
                     stock.stockId) + ' stocks was denied. You needed ' + str(
-                    transactionPrice* transactionVolume) + ' euro, but only have a balance of ' + str(self.balance))
+                    float(transactionPrice)* float(transactionVolume)) + ' euro, but only have a balance of '
+                      + str(self.balance))
         elif orderType == 'sell':
             t = Transaction(user=self, stock=stock, transactionDate=transactionDate,
                             transactionPrice=transactionPrice, transactionVolume=transactionVolume,
