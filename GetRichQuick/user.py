@@ -1,8 +1,10 @@
+from .Portfolio import Portfolio
+
 class User:
     name = ""
     balance = 0
     transactions = []
-    portfolio = dict()
+    portfolio = Portfolio()
 
     def __init__(self, name, startingbalance):
         self.name = name
@@ -13,13 +15,9 @@ class User:
         self.transactions.append(transaction)
         if transaction.orderType == 'buy':
             self.balance -= float(transaction.transactionPrice) * float(transaction.transactionVolume)
-            if transaction.stock.stockId not in self.portfolio.keys():
-                self.portfolio[transaction.stock.stockId] = 0
-            self.portfolio[transaction.stock.stockId] += transaction.transactionVolume
+            self.portfolio.AddPosition(transaction.stock.stockId, transaction.transactionVolume)
         elif transaction.orderType == 'sell':
-            if transaction.stock.stockId not in self.portfolio.keys():
-                print(transaction.stock.stockId + " not in portfolio!")
-            self.portfolio[transaction.stock.stockId] -= transaction.transactionVolume
+            self.portfolio.AddPosition(transaction.stock.stockId, -transaction.transactionVolume)
             self.balance += float(transaction.transactionPrice) * float(transaction.transactionVolume)
         else:
             print("unknown order type: ", transaction.orderType)
@@ -28,8 +26,5 @@ class User:
     def getBalance(self):
         return self.balance
 
-
-
-    # Todo
-    def getPortfolio(self):
-        return self.portfolio
+    def getPortfolioValue(self):
+        return self.portfolio.GetPortfolioValue()
