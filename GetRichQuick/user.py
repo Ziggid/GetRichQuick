@@ -15,8 +15,15 @@ class User:
         self.transactions.append(transaction)
         if transaction.orderType == 'buy':
             if self.balance > float(transaction.transactionPrice) * float(transaction.transactionVolume):
-                self.balance -= float(transaction.transactionPrice) * float(transaction.transactionVolume)
-                self.portfolio.AddPosition(transaction.stock.stockId, transaction.transactionVolume)
+                if transaction.transactionVolume > 0:
+                    self.balance -= float(transaction.transactionPrice) * float(transaction.transactionVolume)
+                    if transaction.stock.stockId not in self.portfolio.keys():
+                        self.portfolio[transaction.stock.stockId] = 0
+                        self.portfolio[transaction.stock.stockId] += transaction.transactionVolume
+                        self.balance -= float(transaction.transactionPrice) * float(transaction.transactionVolume)
+                        self.portfolio.AddPosition(transaction.stock.stockId, transaction.transactionVolume)
+                else:
+                    print("You cannot buy a negative amount")
             else:
                 print("You don't have enough balance to carry out this transaction. Transaction of " + str(transaction.transactionVolume) + ' ' + str(
                     transaction.stock.stockId) + ' stocks was denied. You needed ' + str(transaction.transactionPrice) + ' euro, but only have a balance of ' + str(self.balance))
