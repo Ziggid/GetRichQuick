@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import requests
 
 class StockData:
-    names = {"MSFT", "PDD", "TSE:TD", "QCOM", "DAX", "^AEX", "INGB"}
+    names = {"MSFT", "PDD", "TSE:TD", "QCOM", "DAX", "^AEX", "ING"}
 
     def get_current_stock_data(self, name):
         API_URL = "https://www.alphavantage.co/query"
