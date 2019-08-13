@@ -1,10 +1,13 @@
 import requests
 import pandas as pd
+from peewee import *
+db = SqliteDatabase('getrich.db')
 
-class Stock:
+class Stock(Model):
 
-    def __init__(self, stockId):
-        self.stockId = stockId
+    # def __init__(self, stockId):
+    #     self.stockId = stockId
+    stockId = CharField()
 
     def getCurrentStockPrice(self):
         response = requests.get(
@@ -22,4 +25,7 @@ class Stock:
 
     def __str__(self):
         return 'The stock ' + str(self.stockId) + ' trades for ...' + ' on ' + str(self.date)
+
+    class Meta:
+        database = db
 

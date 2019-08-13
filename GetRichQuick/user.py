@@ -1,14 +1,18 @@
-from .Portfolio import Portfolio
+# from .Portfolio import Portfolio
+from peewee import *
 
-class User:
-    name = ""
-    balance = 0
-    transactions = []
-    portfolio = Portfolio()
+db = SqliteDatabase('getrich.db')
 
-    def __init__(self, name, startingbalance):
-        self.name = name
-        self.balance = startingbalance
+
+class User(Model):
+    name = CharField()
+    balance = FloatField()
+    # transactions = [] # wordt backref
+    # portfolio = ForeignKeyField(Portfolio, backref = "users") #logic is other way around
+
+    # def __init__(self, name, startingbalance):
+    #     self.name = name
+    #     self.balance = startingbalance
 
 
     def doTransaction(self, transaction):
@@ -21,13 +25,13 @@ class User:
                         self.portfolio[transaction.stock.stockId] = 0
                         self.portfolio[transaction.stock.stockId] += transaction.transactionVolume
                         self.balance -= float(transaction.transactionPrice) * float(transaction.transactionVolume)
-                        self.portfolio.AddPosition(transaction.stock.stockId, transaction.transactionVolume)
+                        self.portfolio.addPosition(transaction.stock.stockId, transaction.transactionVolume)
                 else:
                     print("You cannot buy a negative amount")
             else:
                 print("You don't have enough balance to carry out this transaction")
         elif transaction.orderType == 'sell':
-            self.portfolio.AddPosition(transaction.stock.stockId, -transaction.transactionVolume)
+            self.portfolio.addPosition(transaction.stock.stockId, -transaction.transactionVolume)
             self.balance += float(transaction.transactionPrice) * float(transaction.transactionVolume)
         else:
             print("unknown order type: ", transaction.orderType)
@@ -37,3 +41,6 @@ class User:
 
     def getPortfolioValue(self):
         return self.portfolio.GetPortfolioValue()
+
+    class Meta:
+        database = db
