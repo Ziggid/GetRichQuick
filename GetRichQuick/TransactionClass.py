@@ -12,7 +12,6 @@ class Transaction(Model):
     #     self.transactionPrice = pricetuple[1]
     #     self.transactionVolume = transactionVolume
     #     self.orderType = orderType
-
     user = ForeignKeyField(User, backref='transactions')
     stock = ForeignKeyField(Stock, backref="transactions")
     transactionDate = CharField()
