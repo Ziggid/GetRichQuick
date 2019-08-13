@@ -18,7 +18,8 @@ class User:
                 self.balance -= float(transaction.transactionPrice) * float(transaction.transactionVolume)
                 self.portfolio.AddPosition(transaction.stock.stockId, transaction.transactionVolume)
             else:
-                print("You don't have enough balance to carry out this transaction")
+                print("You don't have enough balance to carry out this transaction. Transaction of " + str(transaction.transactionVolume) + ' ' + str(
+                    transaction.stock.stockId) + ' stocks was denied. You needed ' + str(transaction.transactionPrice) + ' euro, but only have a balance of ' + str(self.balance))
         elif transaction.orderType == 'sell':
             self.portfolio.AddPosition(transaction.stock.stockId, -transaction.transactionVolume)
             self.balance += float(transaction.transactionPrice) * float(transaction.transactionVolume)
