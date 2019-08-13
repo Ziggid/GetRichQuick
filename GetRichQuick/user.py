@@ -12,7 +12,7 @@ class User:
     def doTransaction(self, transaction):
         self.transactions.append(transaction)
         if transaction.orderType == 'buy':
-            if self.balance >0:
+            if self.balance > float(transaction.transactionPrice) * float(transaction.transactionVolume):
                 self.balance -= float(transaction.transactionPrice) * float(transaction.transactionVolume)
                 if transaction.stock.stockId not in self.portfolio.keys():
                     self.portfolio[transaction.stock.stockId] = 0
