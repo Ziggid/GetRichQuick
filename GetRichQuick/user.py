@@ -16,7 +16,7 @@ class User:
         if transaction.orderType == 'buy':
             if self.balance > float(transaction.transactionPrice) * float(transaction.transactionVolume):
                 self.balance -= float(transaction.transactionPrice) * float(transaction.transactionVolume)
-				self.portfolio.AddPosition(transaction.stock.stockId, transaction.transactionVolume)
+                self.portfolio.AddPosition(transaction.stock.stockId, transaction.transactionVolume)
             else:
                 print("You don't have enough balance to carry out this transaction")
         elif transaction.orderType == 'sell':
