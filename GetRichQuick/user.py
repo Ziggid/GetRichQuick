@@ -14,17 +14,19 @@ class User:
     def doTransaction(self, transaction):
         self.transactions.append(transaction)
         if transaction.orderType == 'buy':
-            self.balance -= float(transaction.transactionPrice) * float(transaction.transactionVolume)
-            self.portfolio.AddPosition(transaction.stock.stockId, transaction.transactionVolume)
+            if self.balance > float(transaction.transactionPrice) * float(transaction.transactionVolume):
+                self.balance -= float(transaction.transactionPrice) * float(transaction.transactionVolume)
+				self.portfolio.AddPosition(transaction.stock.stockId, transaction.transactionVolume)
+            else:
+                print("You don't have enough balance to carry out this transaction")
         elif transaction.orderType == 'sell':
             self.portfolio.AddPosition(transaction.stock.stockId, -transaction.transactionVolume)
             self.balance += float(transaction.transactionPrice) * float(transaction.transactionVolume)
         else:
             print("unknown order type: ", transaction.orderType)
 
+
     # Todo
-    def getBalance(self):
-        return self.balance
 
     def getPortfolioValue(self):
         return self.portfolio.GetPortfolioValue()
