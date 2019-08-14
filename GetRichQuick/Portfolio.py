@@ -1,16 +1,21 @@
+from peewee import *
+
 from .Stock import getCurrentStockPrice
 from .user import User
-from peewee import *
 
 db = SqliteDatabase('getrich.db')
 
 
 class Portfolio(Model):
-    # positions = list() needs to be backreffed
-    _user = ForeignKeyField(User, backref='portfolio')
+    _user = ForeignKeyField(User, backref='_portfolio')
 
-    # def add(self, position):
-    #     self.positions.append(position)
+    @property
+    def user(self):
+        return (self._user)
+
+    @property
+    def positions(self):
+        return (self._positions)
 
     def addPosition(self, stockId, transactionVolume):
         for position in self.positions:
@@ -18,11 +23,8 @@ class Portfolio(Model):
                 position.updatePosition(transactionVolume)
                 position.save()
                 return
-        # s = Stock(stockId=stockId)
-        # s.save()
-        p = Position(volume=transactionVolume, portfolio=self, stockId=stockId)
+        p = Position(_volume=transactionVolume, _portfolio=self, _stockId=stockId)
         p.save()
-        # self.positions.append(Position(Stock(stockId), transactionVolume))
 
     def GetPortfolioValue(self):
         value = 0
@@ -47,19 +49,27 @@ class Portfolio(Model):
 
 
 class Position(Model):
-    # def __init__(self, stock, volume):
-    #     self.stock = stock
-    #     self.volume = volume..
-    volume = FloatField()
-    portfolio = ForeignKeyField(Portfolio, backref='positions')
-    stockId = CharField()
-    # stock = ForeignKeyField(Stock, backref='positions')
+    _volume = FloatField()
+    _portfolio = ForeignKeyField(Portfolio, backref='_positions')
+    _stockId = CharField()
+
+    @property
+    def volume(self):
+        return (self._volume)
+
+    @property
+    def portfolio(self):
+        return (self._portfolio)
+
+    @property
+    def stockId(self):
+        return (self._stockId)
 
     def updatePosition(self, volume):
-        if self.volume + volume < 0:
+        if self._volume + volume < 0:
             print('Negative position not allowed')
         else:
-            self.volume += volume
+            self._volume += volume
 
     class Meta:
         database = db

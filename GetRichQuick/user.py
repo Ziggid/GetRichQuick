@@ -1,40 +1,8 @@
-# from .Portfolio import Portfolio
-import requests
 from peewee import *
+
 from .Stock import getCurrentStockPrice
 
 db = SqliteDatabase('getrich.db')
-
-
-# class Stock(Model):
-#     # def __init__(self, stockId):
-#     #     self.stockId = stockId
-#     _stockId = CharField()
-#
-#     @property
-#     def stockId(self):
-#         return self._stockId
-#
-#     def getCurrentStockPrice(self):
-#         response = requests.get(
-#             "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + self.stockId +
-#             "&interval=1min&outputsize=compact&apikey=HUTM7V18LBLQPIOP")
-#
-#         # Since we are retrieving stuff from a web service, it's a good idea to check for the return status code
-#         # See: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
-#         if response.status_code != 200:
-#             raise ValueError("Could not retrieve data, code:", response.status_code)
-#
-#         # The service sends JSON data, we parse that into a Python datastructure
-#         raw_data = response.json()
-#         return [max(raw_data['Time Series (1min)'].keys()),
-#                 raw_data['Time Series (1min)'][max(raw_data['Time Series (1min)'].keys())]['4. close']]
-#
-#     def __str__(self):
-#         return 'The stock ' + str(self.stockId) + ' trades for ...' + ' on ' + str(self.date)
-#
-#     class Meta:
-#         database = db
 
 
 class User(Model):
@@ -50,12 +18,13 @@ class User(Model):
     def balance(self):
         return self._balance
 
-    # transactions = [] # wordt backref
-    # portfolio = ForeignKeyField(Portfolio, backref = "users") #logic is other way around
+    @property
+    def portfolio(self):
+        return self._portfolio
 
-    # def __init__(self, name, startingbalance):
-    #     self.name = name
-    #     self.balance = startingbalance
+    @property
+    def transactions(self):
+        return self._transactions
 
     def doTransaction(self, stockId: str, transactionVolume, orderType):
         response = getCurrentStockPrice(stockId)
@@ -64,9 +33,9 @@ class User(Model):
         if orderType == 'buy':
             if self._balance > float(transaction_price) * float(transactionVolume):
                 if transactionVolume > 0:
-                    t = Transaction(user=self, stockId=stockId, transactionDate=transaction_date,
-                                    transactionPrice=transaction_price, transactionVolume=transactionVolume,
-                                    orderType=orderType)
+                    t = Transaction(_user=self, _stockId=stockId, _transactionDate=transaction_date,
+                                    _transactionPrice=transaction_price, _transactionVolume=transactionVolume,
+                                    _orderType=orderType)
                     t.save()
                     self._balance -= float(transaction_price) * float(transactionVolume)
                     self.portfolio[0].addPosition(stockId, t.transactionVolume)
@@ -78,9 +47,9 @@ class User(Model):
                     float(transaction_price) * float(transactionVolume)) + ' euro, but only have a balance of '
                       + str(self._balance))
         elif orderType == 'sell':
-            t = Transaction(user=self, stockId=stockId, transactionDate=transaction_date,
-                            transactionPrice=transaction_price, transactionVolume=transactionVolume,
-                            orderType=orderType)
+            t = Transaction(_user=self, _stockId=stockId, _transactionDate=transaction_date,
+                            _transactionPrice=transaction_price, _transactionVolume=transactionVolume,
+                            _orderType=orderType)
             if (self.EnoughVolumeForSellTransaction(t)):
                 t.save()
                 self.portfolio[0].addPosition(stockId, -transactionVolume)
@@ -97,44 +66,65 @@ class User(Model):
         if transaction.orderType == "buy":
             if self.balance > transaction.transactionPrice * transaction.transactionVolume:
                 return True
-            else: raise Exception("You don't have sufficient balance to complete the transaction. Transaction of " +
-                                  str(transaction.transactionVolume) + " " + str(transaction.stockId) +
-                                  " stock was denied. You needed " + str(transaction.transactionPrice) +
-                                  " Euro but only have a balance of " +str(self.balance))
-        else: return False
+            else:
+                raise Exception("You don't have sufficient balance to complete the transaction. Transaction of " +
+                                str(transaction.transactionVolume) + " " + str(transaction.stockId) +
+                                " stock was denied. You needed " + str(transaction.transactionPrice) +
+                                " Euro but only have a balance of " + str(self.balance))
+        else:
+            return False
 
     def EnoughVolumeForSellTransaction(self, transaction):
         if transaction.orderType == 'sell':
             if float(transaction.transactionVolume) < float(self.portfolio[0].get_volume_stock(transaction.stockId)):
                 return True
-            else: raise Exception("You don't have enough volume to carry out this transaction. Transaction of " + str(
+            else:
+                raise Exception("You don't have enough volume to carry out this transaction. Transaction of " + str(
                     transaction.transactionVolume) + ' ' + str(
                     transaction.stockId) + ' stocks was denied. You needed ' + str(
                     transaction.transactionVolume) + ', but only have a volume of ' + str(
-                        self.portfolio[0].get_volume_stock(transaction.stockId)))
-        else: print('this is a buy order type')
+                    self.portfolio[0].get_volume_stock(transaction.stockId)))
+        else:
+            print('this is a buy order type')
 
     class Meta:
         database = db
 
 
 class Transaction(Model):
-    # def __init__(self, transactionVolume, stockId, orderType):
-    #     self.stock = Stock(stockId)
-    #     pricetuple = self.stock.getCurrentStockPrice()
-    #     self.transactionDate = pricetuple[0]
-    #     self.transactionPrice = pricetuple[1]
-    #     self.transactionVolume = transactionVolume
-    #     self.orderType = orderType
-    user = ForeignKeyField(User, backref='transactions')
-    stockId = CharField()
-    transactionDate = CharField()
-    transactionPrice = FloatField()
-    transactionVolume = IntegerField()
-    orderType = CharField()
+    _user = ForeignKeyField(User, backref='_transactions')
+    _stockId = CharField()
+    _transactionDate = CharField()
+    _transactionPrice = FloatField()
+    _transactionVolume = IntegerField()
+    _orderType = CharField()
+
+    @property
+    def user(self):
+        return self._user
+
+    @property
+    def stockId(self):
+        return self._stockId
+
+    @property
+    def transactionDate(self):
+        return self._transactionDate
+
+    @property
+    def transactionPrice(self):
+        return self._transactionPrice
+
+    @property
+    def transactionVolume(self):
+        return self._transactionVolume
+
+    @property
+    def orderType(self):
+        return self._orderType
 
     def __str__(self):
-        return 'A ' + str(self.orderType) + " of " + str(self.stock.stockId) + " of size " + str(
+        return 'A ' + str(self.orderType) + " of " + str(self.stockId) + " of size " + str(
             self.transactionVolume) + ' is executed on ' + str(self.transactionDate) + ' for the price of ' + str(
             self.transactionPrice)
 

@@ -30,10 +30,10 @@ db = SqliteDatabase('getrich.db')
 
 db.connect()
 # When you need to reset, uncomment the below code.
-db.drop_tables([Portfolio, Position, Transaction, User])
-db.create_tables([Portfolio, Position, Transaction, User])
+# db.drop_tables([Portfolio, Position, Transaction, User])
+# db.create_tables([Portfolio, Position, Transaction, User])
 
-# loads user (or creates user if non-existing
+# loads user (or creates user if non-existing)
 u = loadUser(input("Enter your name: "))
 print("Current Cash-Balance is: " + str(u.balance))
 print("printing current portfolio")
@@ -52,21 +52,6 @@ print("printing new portfolio")
 for pos in u.portfolio[0].positions:
     print(pos.stockId, pos.volume)
 
-# bart = User.select().where(User.name == "bart").get()
-# print(len(u.portfolio))
-# for pos in bart.portfolio[0].positions
-#     print(pos.stock.stockId, pos.volume)
-
-#
-# portf = Portfolio(user=bart)
-# portf.save()
-
-# bart = User.select().where(User.name == "bart").get()
-
-# print("date =" + t.transactionDate)
-
-# print(u.name, u.balance)
-# u.save()
 db.close()
 
 
