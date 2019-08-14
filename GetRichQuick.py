@@ -18,7 +18,7 @@ def loadUser(name):
 
     for user in User.select():
         if user.name == name:
-            result = User.select().where(User.name == name).get()
+            result = User.select().where(User._name == name).get()
             print("Loading user: " + name)
             testbool = False
     if testbool:
