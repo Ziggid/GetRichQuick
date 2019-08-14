@@ -53,6 +53,9 @@ def stock_form():
 
 @app.route('/GetRichQuick', methods=['GET', 'POST'])
 def interaction_client():
+    string = ''
+    for position in u.portfolio[0].positions:
+        string += position.stockId + ': ' + str(position.volume) + '\n'
     if request.method == 'POST':
         stockId = request.form['stock']
         type = request.form['type']
@@ -62,12 +65,14 @@ def interaction_client():
 
         return render_template("GetRichQuick.html",
                                name=u.name,
-                               balance=u.balance)
+                               balance=u.balance,
+                               portefeuille=string)
     else:
         return render_template(
         "GetRichQuick.html",
         name=u.name,
-        balance=u.balance
+        balance=u.balance,
+        portefeuille=string
     )
 
 
