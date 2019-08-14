@@ -1,4 +1,3 @@
-from GetRichQuick.Stock import Stock
 from GetRichQuick.Portfolio import Portfolio
 from GetRichQuick.Portfolio import Position
 from GetRichQuick.user import Transaction
@@ -7,9 +6,9 @@ from peewee import *
 
 
 def newUser(name, amount):
-    temp = User(name=name,balance=amount)
+    temp = User(_name=name, _balance=amount)
     temp.save()
-    portf = Portfolio(user=temp)
+    portf = Portfolio(_user=temp)
     portf.save()
     return temp
 
@@ -31,28 +30,27 @@ db = SqliteDatabase('getrich.db')
 
 db.connect()
 # When you need to reset, uncomment the below code.
-# db.drop_tables([Portfolio, Position, Stock, Transaction, User])
-# db.create_tables([Portfolio, Position, Stock, Transaction, User])
+db.drop_tables([Portfolio, Position, Transaction, User])
+db.create_tables([Portfolio, Position, Transaction, User])
 
 # loads user (or creates user if non-existing
 u = loadUser(input("Enter your name: "))
 print("Current Cash-Balance is: " + str(u.balance))
 print("printing current portfolio")
 for pos in u.portfolio[0].positions:
-    print(pos.stock.stockId, pos.volume)
+    print(pos.stockId, pos.volume)
 
 
-stock = Stock(stockId=input("What stock? "))
-stock.save()
+stockId=input("What stock? ")
 ttype = input("buy/sell: ")
 amount = int(input("how many? "))
 
-u.doTransaction(stock, amount, ttype)
+u.doTransaction(stockId, amount, ttype)
 u.save()
 print("New Cash-Balance is: " + str(u.balance))
 print("printing new portfolio")
 for pos in u.portfolio[0].positions:
-    print(pos.stock.stockId, pos.volume)
+    print(pos.stockId, pos.volume)
 
 # bart = User.select().where(User.name == "bart").get()
 # print(len(u.portfolio))
